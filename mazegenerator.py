@@ -49,6 +49,17 @@ class MazeGenerator:
 
         self.canvas.draw()
 
+    def toggle_wall(self, row, column, direction):
+        self.walls[row][column][direction] = not self.walls[row][column][direction]
+        if direction == 'R' and column < self.columns - 1:
+            self.walls[row][column + 1]['L'] = self.walls[row][column][direction]
+        elif direction == 'T' and row > 0:
+            self.walls[row - 1][column]['B'] = self.walls[row][column][direction]
+        elif direction == 'L' and column > 0:
+            self.walls[row][column - 1]['R'] = self.walls[row][column][direction]
+        elif direction == 'B' and row < self.rows - 1:
+            self.walls[row + 1][column]['T'] = self.walls[row][column][direction]
+        self.draw_maze()
 
 def main():
     root = tk.Tk()
