@@ -22,8 +22,14 @@ class MazeGenerator:
 
         self.canvas.mpl_connect('button_press_event', self.on_click)
 
-        self.export_button = tk.Button(master, text="Export Maze", command=self.export_maze)
-        self.export_button.pack(side=tk.BOTTOM)
+        button_frame = tk.Frame(master)
+        button_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+        self.import_button = tk.Button(button_frame, text="Import Maze", command=self.import_maze)
+        self.import_button.pack(side=tk.LEFT)
+
+        self.export_button = tk.Button(button_frame, text="Export Maze", command=self.export_maze)
+        self.export_button.pack(side=tk.RIGHT)
 
         self.draw_maze()
 
