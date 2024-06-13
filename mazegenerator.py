@@ -35,6 +35,18 @@ class MazeGenerator:
         self.axis.set_yticks(range(self.rows + 1))
         self.axis.grid(True, linestyle='-', linewidth=0.5, color='grey')
 
+        for row in range(self.rows):
+            for column in range(self.columns):
+                cell_walls = self.walls[row][column]
+                if cell_walls['R']:
+                    self.axis.plot([column + 1, column + 1], [row, row + 1], color='black', linewidth=2)
+                if cell_walls['T']:
+                    self.axis.plot([column, column + 1], [row, row], color='black', linewidth=2)
+                if cell_walls['L']:
+                    self.axis.plot([column, column], [row, row + 1], color='black', linewidth=2)
+                if cell_walls['B']:
+                    self.axis.plot([column, column + 1], [row + 1, row + 1], color='black', linewidth=2)
+
         self.canvas.draw()
 
 
