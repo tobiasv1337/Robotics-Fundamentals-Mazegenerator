@@ -3,6 +3,7 @@ import tkinter.filedialog as fd
 import matplotlib.pyplot as plt
 import matplotlib.figure as fig
 import matplotlib.backends.backend_tkagg as tkagg
+import ast
 
 class MazeGenerator:
     def __init__(self, master):
@@ -151,6 +152,30 @@ class MazeGenerator:
                         row_text += ",\n"
                     file.write(row_text)
                 file.write("]")
+    
+    def import_maze(self):
+        filename = fd.askopenfilename(filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+
+        if filename:
+            with open(filename, 'r') as file:
+                maze_str = file.read()
+            
+            parsed_maze = ast.literal_eval(maze_str)
+
+            new_walls = []
+
+            for row in parsed_maze:
+                new_row = []
+                for cell in row:
+                    cell_walls = {wall: (wall in cell) for wall in ['R', 'T', 'L', 'B']}
+                    new_row.append(cell_walls)
+                new_walls.append(new_row)
+
+            self.walls = new_walls
+            self.rows = len(self.walls)
+            self.columns = len(self.walls[0]) if self.rows > 0 else 0
+
+            self.draw_maze()
 
 def main():
     root = tk.Tk()
