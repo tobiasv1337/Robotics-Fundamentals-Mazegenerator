@@ -35,19 +35,28 @@ class MazeGenerator:
         self.axis.set_ylim(self.rows, 0)
         self.axis.set_xticks(range(self.columns + 1))
         self.axis.set_yticks(range(self.rows + 1))
-        self.axis.grid(True, linestyle='-', linewidth=0.5, color='grey')
+        self.axis.grid(True, linestyle='--', linewidth=0.5, color='grey')
+
+        for spine in self.axis.spines.values():
+            spine.set_linestyle('--')
+            spine.set_linewidth(0.5)
+            spine.set_color('grey')
 
         for row in range(self.rows):
             for column in range(self.columns):
                 cell_walls = self.walls[row][column]
                 if cell_walls['R']:
-                    self.axis.plot([column + 1, column + 1], [row, row + 1], color='black', linewidth=2)
+                    linewidth = 2 if column < self.columns - 1 else 4
+                    self.axis.plot([column + 1, column + 1], [row, row + 1], color='black', linewidth=linewidth)
                 if cell_walls['T']:
-                    self.axis.plot([column, column + 1], [row, row], color='black', linewidth=2)
+                    linewidth = 2 if row > 0 else 4
+                    self.axis.plot([column, column + 1], [row, row], color='black', linewidth=linewidth)
                 if cell_walls['L']:
-                    self.axis.plot([column, column], [row, row + 1], color='black', linewidth=2)
+                    linewidth = 2 if column > 0 else 4
+                    self.axis.plot([column, column], [row, row + 1], color='black', linewidth=linewidth)
                 if cell_walls['B']:
-                    self.axis.plot([column, column + 1], [row + 1, row + 1], color='black', linewidth=2)
+                    linewidth = 2 if row < self.rows - 1 else 4
+                    self.axis.plot([column, column + 1], [row + 1, row + 1], color='black', linewidth=linewidth)
 
         self.canvas.draw()
 
