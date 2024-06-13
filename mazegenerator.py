@@ -19,6 +19,8 @@ class MazeGenerator:
         self.toolbar = tkagg.NavigationToolbar2Tk(self.canvas, self.master)
         self.toolbar.update()
 
+        self.canvas.mpl_connect('button_press_event', self.on_click)
+
         self.draw_maze()
 
     def create_figure(self):
