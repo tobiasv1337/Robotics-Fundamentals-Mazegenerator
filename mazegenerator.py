@@ -154,7 +154,7 @@ class MazeGenerator:
                 for row in range(self.rows):
                     row_text = "["
                     for column in range(self.columns):
-                        str_len = init_cell_bracket_len if (row != 0 or column != 0) and init_cell_bracket_len > max_width else max_width
+                        str_len = init_cell_bracket_len if (row != 0 or column != 0) and init_cell_bracket_len > max_width else max_width-1 if row == 0 and column == 0 else max_width
                         walls = [wall for wall, present in self.walls[row][column].items() if present]
                         cell_str = "[" + ", ".join(walls) + "]"
                         if column < self.columns - 1:
