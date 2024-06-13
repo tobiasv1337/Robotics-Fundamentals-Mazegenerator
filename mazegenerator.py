@@ -13,23 +13,30 @@ class MazeGenerator:
         self.walls = [[{'R': False, 'T': False, 'L': False, 'B': False} for _ in range(self.columns)] for _ in range(self.rows)]
 
         self.master.title("Maze Generator")
+
+        self.master.rowconfigure(1, weight=1)
+        self.master.columnconfigure(0, weight=1)
+        self.canvas_frame = tk.Frame(master)
+        self.canvas_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.canvas_frame.rowconfigure(0, weight=1)
+        self.canvas_frame.columnconfigure(0, weight=1)
         self.figure, self.axis = self.create_figure()
-        self.canvas = tkagg.FigureCanvasTkAgg(self.figure, master=self.master)
+        self.canvas = tkagg.FigureCanvasTkAgg(self.figure, master=self.canvas_frame)
         self.canvas_widget = self.canvas.get_tk_widget()
-        self.canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.toolbar = tkagg.NavigationToolbar2Tk(self.canvas, self.master)
+        self.canvas_widget.grid(row=0, column=0, sticky=(tk.N, tk.W, tk.E, tk.S))
+        self.toolbar_frame = tk.Frame(self.canvas_frame)
+        self.toolbar_frame.grid(row=1, column=0, sticky=(tk.W, tk.E))
+        self.toolbar = tkagg.NavigationToolbar2Tk(self.canvas, self.toolbar_frame)
         self.toolbar.update()
 
-        self.canvas.mpl_connect('button_press_event', self.on_click)
-
         button_frame = tk.Frame(master)
-        button_frame.pack(side=tk.BOTTOM, fill=tk.X)
-
+        button_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
         self.import_button = tk.Button(button_frame, text="Import Maze", command=self.import_maze)
-        self.import_button.pack(side=tk.LEFT)
-
+        self.import_button.grid(row=0, column=0, padx=5)
         self.export_button = tk.Button(button_frame, text="Export Maze", command=self.export_maze)
-        self.export_button.pack(side=tk.RIGHT)
+        self.export_button.grid(row=0, column=1, padx=5)
+
+        self.canvas.mpl_connect('button_press_event', self.on_click)
 
         self.draw_maze()
 
