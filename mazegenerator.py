@@ -123,6 +123,8 @@ class MazeGenerator:
         if filename:
             init_cell_bracket_walls = [wall for wall, present in self.walls[0][0].items() if present]
             init_cell_bracket_str = "[" + ", ".join(init_cell_bracket_walls) + "]"
+            if self.columns > 1:
+                init_cell_bracket_str += ", "
             init_cell_bracket_len = len(init_cell_bracket_str) + 1 #+1 to account for the opening bracket of the grid
 
             max_width = 0
@@ -130,6 +132,8 @@ class MazeGenerator:
                 for column in range(self.columns):
                     walls = [wall for wall, present in self.walls[row][column].items() if present]
                     cell_str = "[" + ", ".join(walls) + "]"
+                    if column < self.columns - 1:
+                            cell_str += ", "
                     max_width = max(max_width, len(cell_str))
 
             with open(filename, 'w') as file:
@@ -140,9 +144,9 @@ class MazeGenerator:
                         str_len = init_cell_bracket_len if (row != 0 or column != 0) and init_cell_bracket_len > max_width else max_width
                         walls = [wall for wall, present in self.walls[row][column].items() if present]
                         cell_str = "[" + ", ".join(walls) + "]"
-                        row_text += f"{cell_str:<{str_len}}" if column < self.columns - 1 else cell_str
                         if column < self.columns - 1:
-                            row_text += ", "
+                            cell_str += ", "
+                        row_text += f"{cell_str:<{str_len}}" if column < self.columns - 1 else cell_str
                     row_text += "]"
                     if row < self.rows - 1:
                         row_text += ",\n"
