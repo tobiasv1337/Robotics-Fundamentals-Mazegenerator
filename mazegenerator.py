@@ -61,6 +61,21 @@ class MazeGenerator:
             self.walls[row + 1][column]['T'] = self.walls[row][column][direction]
         self.draw_maze()
 
+    def on_click(self, event):
+        if event.inaxes is not None:
+            col, row = int(event.xdata), int(event.ydata)
+            x, y = event.xdata - col, event.ydata - row
+            if x < 0.1:
+                self.toggle_wall(row, col, 'L')
+            elif x > 0.9:
+                self.toggle_wall(row, col, 'R')
+            elif y < 0.1:
+                self.toggle_wall(row, col, 'T')
+            elif y > 0.9:
+                self.toggle_wall(row, col, 'B')
+            
+            self.draw_maze()
+
 def main():
     root = tk.Tk()
     maze_generator = MazeGenerator(root)
