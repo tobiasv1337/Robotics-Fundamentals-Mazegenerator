@@ -140,7 +140,7 @@ class MazeGenerator:
                         str_len = init_cell_bracket_len if (row != 0 or column != 0) and init_cell_bracket_len > max_width else max_width
                         walls = [wall for wall, present in self.walls[row][column].items() if present]
                         cell_str = "[" + ", ".join(walls) + "]"
-                        row_text += f"{cell_str:<{str_len}}"
+                        row_text += f"{cell_str:<{str_len}}" if column < self.columns - 1 else cell_str
                         if column < self.columns - 1:
                             row_text += ", "
                     row_text += "]"
