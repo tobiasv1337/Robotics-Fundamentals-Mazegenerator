@@ -30,7 +30,7 @@ class MazeGenerator:
     def draw_maze(self):
         self.axis.clear()
         self.axis.set_xlim(0, self.columns)
-        self.axis.set_ylim(0, self.rows)
+        self.axis.set_ylim(self.rows, 0)
         self.axis.set_xticks(range(self.columns + 1))
         self.axis.set_yticks(range(self.rows + 1))
         self.axis.grid(True, linestyle='-', linewidth=0.5, color='grey')
