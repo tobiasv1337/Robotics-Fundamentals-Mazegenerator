@@ -21,6 +21,9 @@ class MazeGenerator:
 
         self.canvas.mpl_connect('button_press_event', self.on_click)
 
+        self.export_button = tk.Button(master, text="Export Maze", command=self.export_maze)
+        self.export_button.pack(side=tk.BOTTOM)
+
         self.draw_maze()
 
     def create_figure(self):
@@ -113,6 +116,25 @@ class MazeGenerator:
                 self.toggle_wall(0, col, 'T')
 
             self.draw_maze()
+
+    def export_maze(self):
+        filename = fd.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+
+        if filename:
+            with open(filename, 'w') as file:
+                file.write("[")
+                for row in range(self.rows):
+                    row_text = "["
+                    for column in range(self.columns):
+                        walls = [wall for wall, present in self.walls[row][column].items() if present]
+                        row_text += "[" + ", ".join(walls) + "]"
+                        if column < self.columns - 1:
+                            row_text += ", "
+                    row_text += "]"
+                    if row < self.rows - 1:
+                        row_text += ",\n"
+                    file.write(row_text)
+                file.write("]")
 
 def main():
     root = tk.Tk()
