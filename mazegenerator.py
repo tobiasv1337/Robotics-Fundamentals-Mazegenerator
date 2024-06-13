@@ -69,6 +69,12 @@ class MazeGenerator:
             col, row = int(event.xdata), int(event.ydata)
             x, y = event.xdata - col, event.ydata - row
             print(f"Click at ({col}, {row}) with x={x:.2f} and y={y:.2f}")
+            if col == self.columns:
+                col -= 1
+                x = 1
+            if row == self.rows:
+                row -= 1
+                y = 1
             if x < click_threshold:
                 self.toggle_wall(row, col, 'L')
             elif x > 1 - click_threshold:
