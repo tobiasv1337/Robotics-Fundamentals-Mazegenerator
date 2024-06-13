@@ -64,18 +64,39 @@ class MazeGenerator:
         self.draw_maze()
 
     def on_click(self, event):
+        click_threshold = 0.1
         if event.inaxes is not None:
             col, row = int(event.xdata), int(event.ydata)
             x, y = event.xdata - col, event.ydata - row
-            if x < 0.1:
+            print(f"Click at ({col}, {row}) with x={x:.2f} and y={y:.2f}")
+            if x < click_threshold:
                 self.toggle_wall(row, col, 'L')
-            elif x > 0.9:
+            elif x > 1 - click_threshold:
                 self.toggle_wall(row, col, 'R')
-            elif y < 0.1:
+            elif y < click_threshold:
                 self.toggle_wall(row, col, 'T')
-            elif y > 0.9:
+            elif y > 1 - click_threshold:
                 self.toggle_wall(row, col, 'B')
-            
+
+            self.draw_maze()
+        else:
+            cell_x_size = (self.axis.bbox.xmax - self.axis.bbox.xmin) / self.columns
+            cell_x_threshold = cell_x_size * click_threshold
+            cell_y_size = (self.axis.bbox.ymax - self.axis.bbox.ymin) / self.rows
+            cell_y_threshold = cell_y_size * click_threshold
+            if self.axis.bbox.xmin - cell_x_threshold < event.x < self.axis.bbox.xmin and self.axis.bbox.ymin < event.y < self.axis.bbox.ymax:
+                row = int((self.axis.bbox.ymax - event.y) / (self.axis.bbox.ymax - self.axis.bbox.ymin) * self.rows)
+                self.toggle_wall(row, 0, 'L')
+            elif self.axis.bbox.xmax < event.x < self.axis.bbox.xmax + cell_x_threshold and self.axis.bbox.ymin < event.y < self.axis.bbox.ymax:
+                row = int((self.axis.bbox.ymax - event.y) / (self.axis.bbox.ymax - self.axis.bbox.ymin) * self.rows)
+                self.toggle_wall(row, self.columns - 1, 'R')
+            elif self.axis.bbox.ymin - cell_y_threshold < event.y < self.axis.bbox.ymin and self.axis.bbox.xmin < event.x < self.axis.bbox.xmax:
+                col = int((event.x - self.axis.bbox.xmin) / (self.axis.bbox.xmax - self.axis.bbox.xmin) * self.columns)
+                self.toggle_wall(self.rows - 1, col, 'B')
+            elif self.axis.bbox.ymax < event.y < self.axis.bbox.ymax + cell_y_threshold and self.axis.bbox.xmin < event.x < self.axis.bbox.xmax:
+                col = int((event.x - self.axis.bbox.xmin) / (self.axis.bbox.xmax - self.axis.bbox.xmin) * self.columns)
+                self.toggle_wall(0, col, 'T')
+
             self.draw_maze()
 
 def main():
