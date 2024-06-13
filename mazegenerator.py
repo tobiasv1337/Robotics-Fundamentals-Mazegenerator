@@ -7,6 +7,10 @@ import matplotlib.backends.backend_tkagg as tkagg
 class MazeGenerator:
     def __init__(self, master):
         self.master = master
+        self.rows = 6
+        self.columns = 6
+        self.walls = [[set() for _ in range(self.columns)] for _ in range(self.rows)]
+
         self.master.title("Maze Generator")
         self.figure, self.axis = self.create_figure()
         self.canvas = tkagg.FigureCanvasTkAgg(self.figure, master=self.master)
