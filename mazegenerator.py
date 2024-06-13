@@ -18,13 +18,25 @@ class MazeGenerator:
         self.canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.toolbar = tkagg.NavigationToolbar2Tk(self.canvas, self.master)
         self.toolbar.update()
-    
+
+        self.draw_maze()
+
     def create_figure(self):
         figure = fig.Figure(figsize=(5, 5))
         axis = figure.add_subplot(111)
         axis.set_aspect('equal', adjustable='box')
         return figure, axis
-        
+
+    def draw_maze(self):
+        self.axis.clear()
+        self.axis.set_xlim(0, self.columns)
+        self.axis.set_ylim(0, self.rows)
+        self.axis.set_xticks(range(self.columns + 1))
+        self.axis.set_yticks(range(self.rows + 1))
+        self.axis.grid(True, linestyle='-', linewidth=0.5, color='grey')
+
+        self.canvas.draw()
+
 
 def main():
     root = tk.Tk()
