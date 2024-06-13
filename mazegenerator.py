@@ -8,19 +8,24 @@ class MazeGenerator:
     def __init__(self, master):
         self.master = master
         self.master.title("Maze Generator")
-        self.fig, self.ax = self.create_figure()
-        self.canvas = tkagg.FigureCanvasTkAgg(self.fig, master=self.master)
+        self.figure, self.axis = self.create_figure()
+        self.canvas = tkagg.FigureCanvasTkAgg(self.figure, master=self.master)
         self.canvas_widget = self.canvas.get_tk_widget()
         self.canvas_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
+        self.toolbar = tkagg.NavigationToolbar2Tk(self.canvas, self.master)
+        self.toolbar.update()
     
     def create_figure(self):
-        fig = fig.Figure(figsize=(5, 5))
-        ax = self.fig.add_subplot(111)
-        ax.set_aspect('equal', adjustable='box')
-        return fig, ax
+        figure = fig.Figure(figsize=(5, 5))
+        axis = figure.add_subplot(111)
+        axis.set_aspect('equal', adjustable='box')
+        return figure, axis
         
 
-root = tk.Tk()
+def main():
+    root = tk.Tk()
+    maze_generator = MazeGenerator(root)
+    root.mainloop()
 
-root.mainloop()
+if __name__ == "__main__":
+    main()
