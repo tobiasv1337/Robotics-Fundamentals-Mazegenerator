@@ -10,7 +10,7 @@ class MazeGenerator:
         self.master = master
         self.rows = 6
         self.columns = 6
-        self.walls = [[{'R': False, 'T': False, 'L': False, 'B': False} for _ in range(self.columns)] for _ in range(self.rows)]
+        self.init_walls()
 
         self.master.title("Maze Generator")
 
@@ -36,9 +36,24 @@ class MazeGenerator:
         self.export_button = tk.Button(button_frame, text="Export Maze", command=self.export_maze)
         self.export_button.grid(row=0, column=1, padx=5)
 
+        tk.Label(button_frame, text="Rows:").grid(row=0, column=2, padx=5)
+        self.rows_spinbox = tk.Spinbox(button_frame, from_=1, to=1000, width=5, command=self.update_maze_size)
+        self.rows_spinbox.grid(row=0, column=3, padx=5)
+        self.rows_spinbox.delete(0, tk.END)
+        self.rows_spinbox.insert(0, self.rows)
+
+        tk.Label(button_frame, text="Columns:").grid(row=0, column=4, padx=5)
+        self.columns_spinbox = tk.Spinbox(button_frame, from_=1, to=1000, width=5, command=self.update_maze_size)
+        self.columns_spinbox.grid(row=0, column=5, padx=5)
+        self.columns_spinbox.delete(0, tk.END)
+        self.columns_spinbox.insert(0, self.columns)
+
         self.canvas.mpl_connect('button_press_event', self.on_click)
 
         self.draw_maze()
+
+    def init_walls(self):
+        self.walls = [[{'R': False, 'T': False, 'L': False, 'B': False} for _ in range(self.columns)] for _ in range(self.rows)]
 
     def create_figure(self):
         figure = fig.Figure(figsize=(5, 5))
@@ -76,6 +91,18 @@ class MazeGenerator:
                     self.axis.plot([column, column + 1], [row + 1, row + 1], color='black', linewidth=linewidth)
 
         self.canvas.draw()
+
+    def update_maze_size(self):
+        try:
+            new_rows = int(self.rows_spinbox.get())
+            new_columns = int(self.columns_spinbox.get())
+            if new_rows != self.rows or new_columns != self.columns:
+                self.rows = new_rows
+                self.columns = new_columns
+                self.init_walls()
+                self.draw_maze()
+        except ValueError:
+            pass
 
     def toggle_wall(self, row, column, direction):
         self.walls[row][column][direction] = not self.walls[row][column][direction]
