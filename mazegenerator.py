@@ -173,6 +173,7 @@ class MazeGenerator:
             with open(filename, 'r') as file:
                 maze_str = file.read()
             
+            maze_str = maze_str.replace("R", "'R'").replace("T", "'T'").replace("L", "'L'").replace("B", "'B'")
             parsed_maze = ast.literal_eval(maze_str)
 
             new_walls = []
