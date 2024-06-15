@@ -37,7 +37,7 @@ class MazeGenerator:
         generic_button_frame = tk.Frame(master)
         generic_button_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
         generic_button_frame.columnconfigure(2, weight=1)
-        self.reset_button = tk.Button(generic_button_frame, text="Reset", command=self.init_cells)
+        self.reset_button = tk.Button(generic_button_frame, text="Reset", command=lambda: [self.init_cells(), self.reset_spinboxes(), self.draw_maze()])
         self.reset_button.grid(row=0, column=0, padx=5)
         self.credits_button = tk.Button(generic_button_frame, text="Credits", command=self.show_credits)
         self.credits_button.grid(row=0, column=1, padx=5)
@@ -94,6 +94,12 @@ class MazeGenerator:
 
     def init_cells(self):
         self.cells = [[{'R': False, 'T': False, 'L': False, 'B': False, 'gold': False, 'helipad': False} for _ in range(self.columns)] for _ in range(self.rows)]
+
+    def reset_spinboxes(self):
+        self.columns_spinbox.delete(0, tk.END)
+        self.columns_spinbox.insert(0, self.columns)
+        self.rows_spinbox.delete(0, tk.END)
+        self.rows_spinbox.insert(0, self.rows)
 
     def create_figure(self):
         figure = fig.Figure(figsize=(5, 5))
@@ -309,6 +315,8 @@ class MazeGenerator:
             self.cells = new_cells
             self.rows = len(self.cells)
             self.columns = len(self.cells[0]) if self.rows > 0 else 0
+
+            self.reset_spinboxes()
 
             self.draw_maze()
 
