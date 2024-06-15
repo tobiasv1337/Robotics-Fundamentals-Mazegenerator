@@ -128,6 +128,19 @@ class MazeGenerator:
             self.cells[row + 1][column]['T'] = self.cells[row][column][direction]
         self.draw_maze()
 
+    def toggle_cell_state(self, row, column):
+        cell = self.cells[row][column]
+        if not cell['gold'] and not cell['helipad']:
+            cell['gold'] = True
+        elif cell['gold'] and not cell['helipad']:
+            cell['gold'] = False
+            cell['helipad'] = True
+        elif not cell['gold'] and cell['helipad']:
+            cell['gold'] = True
+        else:
+            cell['gold'] = False
+            cell['helipad'] = False
+
     def on_click(self, event):
         click_threshold = 0.1
         if event.inaxes is not None:
