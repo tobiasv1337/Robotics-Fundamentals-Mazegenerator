@@ -65,9 +65,21 @@ class MazeGenerator:
         self.axis.clear()
         self.axis.set_xlim(0, self.columns)
         self.axis.set_ylim(self.rows, 0)
-        self.axis.set_xticks(range(self.columns + 1))
-        self.axis.set_yticks(range(self.rows + 1))
-        self.axis.grid(True, linestyle='--', linewidth=0.5, color='grey')
+
+        x_tick_positions = [i + 0.5 for i in range(self.columns)]
+        y_tick_positions = [i + 0.5 for i in range(self.rows)]
+        x_tick_labels = [str(i) for i in range(self.columns)]
+        y_tick_labels = [str(i) for i in range(self.rows)]
+        self.axis.set_xticks(x_tick_positions)
+        self.axis.set_xticklabels(x_tick_labels)
+        self.axis.set_yticks(y_tick_positions)
+        self.axis.set_yticklabels(y_tick_labels)
+        self.axis.tick_params(axis='x', which='both', top=True, bottom=True, labeltop=True, labelbottom=True)
+        self.axis.tick_params(axis='y', which='both', left=True, right=True, labelleft=True, labelright=True)
+        self.axis.set_xticks(range(self.columns + 1), minor=True)
+        self.axis.set_yticks(range(self.rows + 1), minor=True)
+        self.axis.grid(which='minor', linestyle='-', linewidth=0.5, color='grey')
+        self.axis.grid(which='major', linestyle='None')
 
         for spine in self.axis.spines.values():
             spine.set_linestyle('--')
