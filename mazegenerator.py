@@ -10,7 +10,7 @@ class MazeGenerator:
         self.master = master
         self.rows = 6
         self.columns = 6
-        self.init_walls()
+        self.init_cells()
 
         self.master.title("Maze Generator")
 
@@ -52,8 +52,8 @@ class MazeGenerator:
 
         self.draw_maze()
 
-    def init_walls(self):
-        self.walls = [[{'R': False, 'T': False, 'L': False, 'B': False} for _ in range(self.columns)] for _ in range(self.rows)]
+    def init_cells(self):
+        self.cells = [[{'R': False, 'T': False, 'L': False, 'B': False, 'gold': False, 'helipad': False} for _ in range(self.columns)] for _ in range(self.rows)]
 
     def create_figure(self):
         figure = fig.Figure(figsize=(5, 5))
@@ -88,17 +88,17 @@ class MazeGenerator:
 
         for row in range(self.rows):
             for column in range(self.columns):
-                cell_walls = self.walls[row][column]
-                if cell_walls['R']:
+                cell = self.cells[row][column]
+                if cell['R']:
                     linewidth = 2 if column < self.columns - 1 else 4
                     self.axis.plot([column + 1, column + 1], [row, row + 1], color='black', linewidth=linewidth)
-                if cell_walls['T']:
+                if cell['T']:
                     linewidth = 2 if row > 0 else 4
                     self.axis.plot([column, column + 1], [row, row], color='black', linewidth=linewidth)
-                if cell_walls['L']:
+                if cell['L']:
                     linewidth = 2 if column > 0 else 4
                     self.axis.plot([column, column], [row, row + 1], color='black', linewidth=linewidth)
-                if cell_walls['B']:
+                if cell['B']:
                     linewidth = 2 if row < self.rows - 1 else 4
                     self.axis.plot([column, column + 1], [row + 1, row + 1], color='black', linewidth=linewidth)
 
@@ -111,21 +111,21 @@ class MazeGenerator:
             if new_rows != self.rows or new_columns != self.columns:
                 self.rows = new_rows
                 self.columns = new_columns
-                self.init_walls()
+                self.init_cells()
                 self.draw_maze()
         except ValueError:
             pass
 
     def toggle_wall(self, row, column, direction):
-        self.walls[row][column][direction] = not self.walls[row][column][direction]
+        self.cells[row][column][direction] = not self.cells[row][column][direction]
         if direction == 'R' and column < self.columns - 1:
-            self.walls[row][column + 1]['L'] = self.walls[row][column][direction]
+            self.cells[row][column + 1]['L'] = self.cells[row][column][direction]
         elif direction == 'T' and row > 0:
-            self.walls[row - 1][column]['B'] = self.walls[row][column][direction]
+            self.cells[row - 1][column]['B'] = self.cells[row][column][direction]
         elif direction == 'L' and column > 0:
-            self.walls[row][column - 1]['R'] = self.walls[row][column][direction]
+            self.cells[row][column - 1]['R'] = self.cells[row][column][direction]
         elif direction == 'B' and row < self.rows - 1:
-            self.walls[row + 1][column]['T'] = self.walls[row][column][direction]
+            self.cells[row + 1][column]['T'] = self.cells[row][column][direction]
         self.draw_maze()
 
     def on_click(self, event):
@@ -173,7 +173,7 @@ class MazeGenerator:
         filename = fd.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
 
         if filename:
-            init_cell_bracket_walls = [wall for wall, present in self.walls[0][0].items() if present]
+            init_cell_bracket_walls = [wall for wall, present in self.cells[0][0].items() if present and wall in ['R', 'T', 'L', 'B']]
             init_cell_bracket_str = "[" + ", ".join(init_cell_bracket_walls) + "]"
             if self.columns > 1:
                 init_cell_bracket_str += ", "
@@ -182,7 +182,7 @@ class MazeGenerator:
             max_width = 0
             for row in range(self.rows):
                 for column in range(self.columns):
-                    walls = [wall for wall, present in self.walls[row][column].items() if present]
+                    walls = [wall for wall, present in self.cells[row][column].items() if present and wall in ['R', 'T', 'L', 'B']]
                     cell_str = "[" + ", ".join(walls) + "]"
                     if column < self.columns - 1:
                             cell_str += ", "
@@ -194,7 +194,7 @@ class MazeGenerator:
                     row_text = "["
                     for column in range(self.columns):
                         str_len = init_cell_bracket_len if (row != 0 or column != 0) and init_cell_bracket_len > max_width else max_width-1 if row == 0 and column == 0 else max_width
-                        walls = [wall for wall, present in self.walls[row][column].items() if present]
+                        walls = [wall for wall, present in self.cells[row][column].items() if present and wall in ['R', 'T', 'L', 'B']]
                         cell_str = "[" + ", ".join(walls) + "]"
                         if column < self.columns - 1:
                             cell_str += ", "
@@ -215,18 +215,20 @@ class MazeGenerator:
             maze_str = maze_str.replace("R", "'R'").replace("T", "'T'").replace("L", "'L'").replace("B", "'B'")
             parsed_maze = ast.literal_eval(maze_str)
 
-            new_walls = []
+            new_cells = []
 
             for row in parsed_maze:
                 new_row = []
                 for cell in row:
-                    cell_walls = {wall: (wall in cell) for wall in ['R', 'T', 'L', 'B']}
-                    new_row.append(cell_walls)
-                new_walls.append(new_row)
+                    new_cell = {wall: (wall in cell) for wall in ['R', 'T', 'L', 'B']}
+                    new_cell['gold'] = False
+                    new_cell['helipad'] = False
+                    new_row.append(new_cell)
+                new_cells.append(new_row)
 
-            self.walls = new_walls
-            self.rows = len(self.walls)
-            self.columns = len(self.walls[0]) if self.rows > 0 else 0
+            self.cells = new_cells
+            self.rows = len(self.cells)
+            self.columns = len(self.cells[0]) if self.rows > 0 else 0
 
             self.draw_maze()
 
