@@ -142,7 +142,7 @@ class MazeGenerator:
             cell['helipad'] = False
 
     def on_click(self, event):
-        click_threshold = 0.1
+        click_threshold = 0.2
         if event.inaxes is not None:
             col, row = int(event.xdata), int(event.ydata)
             x, y = event.xdata - col, event.ydata - row
@@ -160,6 +160,8 @@ class MazeGenerator:
                 self.toggle_wall(row, col, 'T')
             elif y > 1 - click_threshold:
                 self.toggle_wall(row, col, 'B')
+            else:
+                self.toggle_cell_state(row, col)
 
             self.draw_maze()
         else:
