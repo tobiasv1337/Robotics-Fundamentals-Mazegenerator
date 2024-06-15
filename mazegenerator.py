@@ -36,14 +36,16 @@ class MazeGenerator:
 
         generic_button_frame = tk.Frame(master)
         generic_button_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
-        generic_button_frame.columnconfigure(2, weight=1)
+        generic_button_frame.columnconfigure(3, weight=1)
         self.reset_button = tk.Button(generic_button_frame, text="Reset", command=lambda: [self.init_cells(), self.reset_spinboxes(), self.draw_maze()])
         self.reset_button.grid(row=0, column=0, padx=5)
+        self.toggle_outer_walls_button = tk.Button(generic_button_frame, text="Toggle Outer Walls", command=lambda: self.toggle_outer_walls())
+        self.toggle_outer_walls_button.grid(row=0, column=1, padx=5)
         self.credits_button = tk.Button(generic_button_frame, text="Credits", command=self.show_credits)
-        self.credits_button.grid(row=0, column=1, padx=5)
+        self.credits_button.grid(row=0, column=2, padx=5)
 
         row_column_frame = tk.Frame(generic_button_frame)
-        row_column_frame.grid(row=0, column=3, padx=5, sticky=(tk.E))
+        row_column_frame.grid(row=0, column=4, padx=5, sticky=(tk.E))
         tk.Label(row_column_frame, text="Rows:").grid(row=0, column=0, padx=5)
         self.rows_spinbox = tk.Spinbox(row_column_frame, from_=1, to=1000, width=5, command=self.update_maze_size)
         self.rows_spinbox.grid(row=0, column=1, padx=5)
@@ -241,6 +243,22 @@ class MazeGenerator:
                 self.toggle_wall(0, col, 'T')
 
             self.draw_maze()
+
+    def toggle_outer_walls(self):
+        outer_walls_set = any(self.cells[0][i]['T'] for i in range(self.columns)) or \
+                          any(self.cells[self.rows - 1][i]['B'] for i in range(self.columns)) or \
+                          any(self.cells[i][0]['L'] for i in range(self.rows)) or \
+                          any(self.cells[i][self.columns - 1]['R'] for i in range(self.rows))
+        
+        for i in range(self.columns):
+            self.cells[0][i]['T'] = not outer_walls_set
+            self.cells[self.rows - 1][i]['B'] = not outer_walls_set
+        
+        for i in range(self.rows):
+            self.cells[i][0]['L'] = not outer_walls_set
+            self.cells[i][self.columns - 1]['R'] = not outer_walls_set
+
+        self.draw_maze()
 
     def export_maze(self):
         filename = fd.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
