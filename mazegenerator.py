@@ -33,18 +33,20 @@ class MazeGenerator:
         button_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
         self.import_button = tk.Button(button_frame, text="Import Maze", command=self.import_maze)
         self.import_button.grid(row=0, column=0, padx=5)
-        self.export_button = tk.Button(button_frame, text="Export Maze", command=self.export_maze)
-        self.export_button.grid(row=0, column=1, padx=5)
+        self.export_maze_button = tk.Button(button_frame, text="Export Maze", command=self.export_maze)
+        self.export_maze_button.grid(row=0, column=1, padx=5)
+        self.export_gold_button = tk.Button(button_frame, text="Export Gold", command=self.export_gold)
+        self.export_gold_button.grid(row=0, column=2, padx=5)
 
-        tk.Label(button_frame, text="Rows:").grid(row=0, column=2, padx=5)
+        tk.Label(button_frame, text="Rows:").grid(row=0, column=3, padx=5)
         self.rows_spinbox = tk.Spinbox(button_frame, from_=1, to=1000, width=5, command=self.update_maze_size)
-        self.rows_spinbox.grid(row=0, column=3, padx=5)
+        self.rows_spinbox.grid(row=0, column=4, padx=5)
         self.rows_spinbox.delete(0, tk.END)
         self.rows_spinbox.insert(0, self.rows)
 
-        tk.Label(button_frame, text="Columns:").grid(row=0, column=4, padx=5)
+        tk.Label(button_frame, text="Columns:").grid(row=0, column=5, padx=5)
         self.columns_spinbox = tk.Spinbox(button_frame, from_=1, to=1000, width=5, command=self.update_maze_size)
-        self.columns_spinbox.grid(row=0, column=5, padx=5)
+        self.columns_spinbox.grid(row=0, column=6, padx=5)
         self.columns_spinbox.delete(0, tk.END)
         self.columns_spinbox.insert(0, self.columns)
 
@@ -224,6 +226,19 @@ class MazeGenerator:
                         row_text += ",\n"
                     file.write(row_text)
                 file.write("]")
+    
+    def export_gold(self):
+        filename = fd.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+
+        if filename:
+            with open(filename, 'w') as file:
+                gold_cells = []
+                for row in range(self.rows):
+                    for column in range(self.columns):
+                        if self.cells[row][column]['gold']:
+                            gold_cells.append([row, column])
+                gold_cells_str = '[' + ', '.join([f'[{row}, {column}]' for row, column in gold_cells]) + ']'
+                file.write(gold_cells_str)
     
     def import_maze(self):
         filename = fd.askopenfilename(filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
