@@ -2,6 +2,8 @@ import tkinter as tk
 import tkinter.filedialog as fd
 import matplotlib.pyplot as plt
 import matplotlib.figure as fig
+import matplotlib.image as img
+import matplotlib.offsetbox as offsetbox
 import matplotlib.backends.backend_tkagg as tkagg
 import ast
 
@@ -12,7 +14,10 @@ class MazeGenerator:
         self.columns = 6
         self.init_cells()
 
-        self.master.title("Maze Generator")
+        self.master.title("Maze Generator - by Tobias Veselsky © 2024")
+
+        self.gold_icon = img.imread('res/gold-bars.png')
+        self.helipad_icon = img.imread('res/helicopter-landing.png')
 
         self.master.rowconfigure(1, weight=1)
         self.master.columnconfigure(0, weight=1)
@@ -31,34 +36,56 @@ class MazeGenerator:
 
         button_frame = tk.Frame(master)
         button_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
+        self.reset_button = tk.Button(button_frame, text="Reset", command=self.init_cells)
+        self.reset_button.grid(row=0, column=0, padx=5)
         self.import_button = tk.Button(button_frame, text="Import Maze", command=self.import_maze)
-        self.import_button.grid(row=0, column=0, padx=5)
+        self.import_button.grid(row=0, column=1, padx=5)
         self.import_gold_button = tk.Button(button_frame, text="Import Gold", command=lambda: self.import_feature('gold'))
-        self.import_gold_button.grid(row=0, column=1, padx=5)
+        self.import_gold_button.grid(row=0, column=2, padx=5)
         self.import_helipad_button = tk.Button(button_frame, text="Import Helipad", command=lambda: self.import_feature('helipad'))
-        self.import_helipad_button.grid(row=0, column=2, padx=5)
+        self.import_helipad_button.grid(row=0, column=3, padx=5)
         self.export_maze_button = tk.Button(button_frame, text="Export Maze", command=self.export_maze)
-        self.export_maze_button.grid(row=0, column=3, padx=5)
+        self.export_maze_button.grid(row=0, column=4, padx=5)
         self.export_gold_button = tk.Button(button_frame, text="Export Gold", command=lambda: self.export_feature('gold'))
-        self.export_gold_button.grid(row=0, column=4, padx=5)
+        self.export_gold_button.grid(row=0, column=5, padx=5)
         self.export_helipad_button = tk.Button(button_frame, text="Export Helipad", command=lambda: self.export_feature('helipad'))
-        self.export_helipad_button.grid(row=0, column=5, padx=5)
+        self.export_helipad_button.grid(row=0, column=6, padx=5)
+        self.credits_button = tk.Button(button_frame, text="Credits", command=self.show_credits)
+        self.credits_button.grid(row=0, column=7, padx=5)
 
-        tk.Label(button_frame, text="Rows:").grid(row=0, column=6, padx=5)
+        tk.Label(button_frame, text="Rows:").grid(row=0, column=8, padx=5)
         self.rows_spinbox = tk.Spinbox(button_frame, from_=1, to=1000, width=5, command=self.update_maze_size)
-        self.rows_spinbox.grid(row=0, column=7, padx=5)
+        self.rows_spinbox.grid(row=0, column=9, padx=5)
         self.rows_spinbox.delete(0, tk.END)
         self.rows_spinbox.insert(0, self.rows)
 
-        tk.Label(button_frame, text="Columns:").grid(row=0, column=8, padx=5)
+        tk.Label(button_frame, text="Columns:").grid(row=0, column=10, padx=5)
         self.columns_spinbox = tk.Spinbox(button_frame, from_=1, to=1000, width=5, command=self.update_maze_size)
-        self.columns_spinbox.grid(row=0, column=9, padx=5)
+        self.columns_spinbox.grid(row=0, column=11, padx=5)
         self.columns_spinbox.delete(0, tk.END)
         self.columns_spinbox.insert(0, self.columns)
 
         self.canvas.mpl_connect('button_press_event', self.on_click)
 
         self.draw_maze()
+    
+    def show_credits(self):
+        credits_window = tk.Toplevel(self.master)
+        credits_window.title("Credits")
+        message = """
+        Maze Generator v1.0
+        
+        Developed by: Tobias Veselsky
+        Icons provided by: Flaticon
+        Gold icons created by shmai - Flaticon: https://www.flaticon.com/free-icons/gold
+        Aviation icons created by Iconjam - Flaticon: https://www.flaticon.com/free-icons/aviation
+        
+        © 2024 Tobias Veselsky
+        """
+        tk.Label(credits_window, text=message, justify=tk.LEFT, padx=10, pady=10).pack()
+
+        close_button = tk.Button(credits_window, text="Close", command=credits_window.destroy)
+        close_button.pack(pady=5)
 
     def init_cells(self):
         self.cells = [[{'R': False, 'T': False, 'L': False, 'B': False, 'gold': False, 'helipad': False} for _ in range(self.columns)] for _ in range(self.rows)]
@@ -111,11 +138,18 @@ class MazeGenerator:
                     self.axis.plot([column, column + 1], [row + 1, row + 1], color='black', linewidth=linewidth)
 
                 if cell['gold']:
-                    self.axis.plot(column + 0.5, row + 0.5, marker='o', markersize=18, color='gold')
+                    self.add_icon(row, column, self.gold_icon)
                 if cell['helipad']:
-                    self.axis.plot(column + 0.5, row + 0.5, marker='H', markersize=12, color='blue')
+                    self.add_icon(row, column, self.helipad_icon)
 
         self.canvas.draw()
+
+    def add_icon(self, row, column, icon):
+        cell_size = min(self.axis.bbox.width / self.columns, self.axis.bbox.height / self.rows)
+        zoom = 0.6 * min(cell_size/icon.shape[0], cell_size/icon.shape[1])
+        imagebox = offsetbox.OffsetImage(icon, zoom=zoom)
+        ab = offsetbox.AnnotationBbox(imagebox, (column + 0.5, row + 0.5), frameon=False, box_alignment=(0.5, 0.5))
+        self.axis.add_artist(ab)
 
     def update_maze_size(self):
         try:
