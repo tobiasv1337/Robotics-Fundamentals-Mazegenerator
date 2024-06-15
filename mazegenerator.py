@@ -239,7 +239,7 @@ class MazeGenerator:
                     for column in range(self.columns):
                         if self.cells[row][column]['gold']:
                             gold_cells.append([row, column])
-                gold_cells_str = '[' + ', '.join([f'[{row}, {column}]' for row, column in gold_cells]) + ']'
+                gold_cells_str = '[' + ', '.join([f'[{row},{column}]' for row, column in gold_cells]) + ']'
                 file.write(gold_cells_str)
     
     def import_maze(self):
