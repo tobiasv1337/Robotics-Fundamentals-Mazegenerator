@@ -102,6 +102,11 @@ class MazeGenerator:
                     linewidth = 2 if row < self.rows - 1 else 4
                     self.axis.plot([column, column + 1], [row + 1, row + 1], color='black', linewidth=linewidth)
 
+                if cell['gold']:
+                    self.axis.plot(column + 0.5, row + 0.5, marker='o', markersize=18, color='gold')
+                if cell['helipad']:
+                    self.axis.plot(column + 0.5, row + 0.5, marker='H', markersize=12, color='blue')
+
         self.canvas.draw()
 
     def update_maze_size(self):
