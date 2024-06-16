@@ -17,7 +17,7 @@ class MazeGenerator:
         self.master.title("Maze Generator - by Tobias Veselsky © 2024")
 
         self.gold_icon = img.imread('res/gold-bars.png')
-        self.helipad_icon = img.imread('res/helicopter-landing.png')
+        self.helipad_icon = img.imread('res/helipad.png')
 
         self.master.rowconfigure(1, weight=1)
         self.master.columnconfigure(0, weight=1)
@@ -85,7 +85,7 @@ class MazeGenerator:
         Developed by: Tobias Veselsky
         Icons provided by: Flaticon
         Gold icons created by shmai - Flaticon: https://www.flaticon.com/free-icons/gold
-        Aviation icons created by Iconjam - Flaticon: https://www.flaticon.com/free-icons/aviation
+        Helipad icons created by Freepik - Flaticon: https://www.flaticon.com/free-icons/helipad
         
         © 2024 Tobias Veselsky
         """
@@ -150,16 +150,16 @@ class MazeGenerator:
                     linewidth = 2 if row < self.rows - 1 else 4
                     self.axis.plot([column, column + 1], [row + 1, row + 1], color='black', linewidth=linewidth)
 
-                if cell['gold']:
-                    self.add_icon(row, column, self.gold_icon)
                 if cell['helipad']:
                     self.add_icon(row, column, self.helipad_icon)
+                if cell['gold']:
+                    self.add_icon(row, column, self.gold_icon)
 
         self.canvas.draw()
 
     def add_icon(self, row, column, icon):
         cell_size = min(self.axis.bbox.width / self.columns, self.axis.bbox.height / self.rows)
-        zoom = 0.6 * min(cell_size/icon.shape[0], cell_size/icon.shape[1])
+        zoom = 0.55 * min(cell_size/icon.shape[0], cell_size/icon.shape[1])
         imagebox = offsetbox.OffsetImage(icon, zoom=zoom)
         ab = offsetbox.AnnotationBbox(imagebox, (column + 0.5, row + 0.5), frameon=False, box_alignment=(0.5, 0.5))
         self.axis.add_artist(ab)
